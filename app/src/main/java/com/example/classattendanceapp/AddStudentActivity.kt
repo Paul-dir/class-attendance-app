@@ -1,31 +1,41 @@
 package com.example.classattendanceapp
 
-import android.app.Activity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.classattendanceapp.ui.theme.ClassAttendanceAppTheme
 
-class AddStudentActivity : Activity() {
+class AddStudentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_student)
-
-        val etName = findViewById<EditText>(R.id.etName)
-        val etRoll = findViewById<EditText>(R.id.etRoll)
-        val btnSubmit = findViewById<Button>(R.id.btnSubmit)
-
-        btnSubmit.setOnClickListener {
-            val name = etName.text.toString()
-            val roll = etRoll.text.toString()
-
-            if (name.isNotEmpty() && roll.isNotEmpty()) {
-                // TODO: Save data locally or send to your PHP API
-                Toast.makeText(this, "Student added: $name ($roll)", Toast.LENGTH_SHORT).show()
-                finish()
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+        setContent {
+            ClassAttendanceAppTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    AddStudentScreen()
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun AddStudentScreen() {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Add Student", style = MaterialTheme.typography.displayLarge)
+        var studentName by remember { mutableStateOf("") }
+        OutlinedTextField(
+            value = studentName,
+            onValueChange = { studentName = it },
+            label = { Text("Student Name") }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = { /* Save to XAMPP API */ }) {
+            Text("Save")
         }
     }
 }

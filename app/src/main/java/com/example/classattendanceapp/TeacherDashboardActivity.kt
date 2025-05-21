@@ -1,115 +1,44 @@
 package com.example.classattendanceapp
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
-import com.squareup.picasso.Picasso
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.classattendanceapp.ui.theme.ClassAttendanceAppTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
 
-interface TeacherApi {
-    @POST("generateQrCode.php")
-    fun generateQrCode(@Body data: QrData): Call<Map<String, String>>
-
-    @GET("getAllAttendance.php")
-    fun getAllAttendance(): Call<List<Map<String, String>>>
-}
-
-data class QrData(
-    val class_name: String,
-    val date: String,
-    val code: String
-)
-
-class TeacherDashboardActivity : AppCompatActivity() {
-    private lateinit var api: TeacherApi
-    private val classes = listOf("Math", "Science", "English")
-
+class TeacherDashboardActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_teacher_dashboard)
-
+        // Set up Retrofit for API calls
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.100/attendance_api/") // Replace with your PC's IP
+            .baseUrl("https://your-api-base-url.com/") // Replace with your API URL
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        api = ApiClient.retrofit.create(TeacherApi::class.java)
 
-        val classSpinner = findViewById<Spinner>(R.id.classSpinner)
-        val generateQrButton = findViewById<Button>(R.id.generateQrButton)
-        val qrImage = findViewById<ImageView>(R.id.qrImage)
-        val viewAllAttendanceButton = findViewById<Button>(R.id.viewAllAttendanceButton)
-        val attendanceText = findViewById<TextView>(R.id.attendanceText)
+        // Example: Create an API service (uncomment and update if you have one)
+        // val apiService = retrofit.create(YourApiService::class.java)
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, classes)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        classSpinner.adapter = adapter
-
-        generateQrButton.setOnClickListener {
-            val className = classSpinner.selectedItem.toString()
-            val date = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-            val code = UUID.randomUUID().toString().substring(0, 8)
-            val qrData = QrData(className, date, code)
-
-            api.generateQrCode(qrData).enqueue(object : Callback<Map<String, String>> {
-                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
-                    if (response.isSuccessful && response.body()?.get("message") == "QR code generated") {
-                        val qrUrl = response.body()?.get("url")
-                        Picasso.get().load(qrUrl).into(qrImage)
-                        Toast.makeText(this@TeacherDashboardActivity, "QR Code Generated for $className", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@TeacherDashboardActivity, "Error: ${response.body()?.get("error")}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                    Toast.makeText(this@TeacherDashboardActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
-
-        viewAllAttendanceButton.setOnClickListener {
-            api.getAllAttendance().enqueue(object : Callback<List<Map<String, String>>> {
-                override fun onResponse(call: Call<List<Map<String, String>>>, response: Response<List<Map<String, String>>>) {
-                    if (response.isSuccessful) {
-                        val attendance = StringBuilder()
-                        response.body()?.forEach { record ->
-                            val studentId = record["student_id"]
-                            val className = record["class_name"]
-                            val date = record["date"]
-                            val status = record["status"]
-                            attendance.append("Student: $studentId, Class: $className, Date: $date, Status: $status\n")
-                        }
-                        attendanceText.text = attendance.toString()
-                    } else {
-                        attendanceText.text = "Error: Failed to fetch attendance"
-                    }
-                }
-
-                override fun onFailure(call: Call<List<Map<String, String>>>, t: Throwable) {
-                    attendanceText.text = "Error: ${t.message}"
-                }
-            })
+        setContent {
+            ClassAttendanceAppTheme {
+                DashboardScreen()
+            }
         }
     }
 }
 
+@Composable
+fun DashboardScreen() {
+    Text(text = "Teacher Dashboard")
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DashboardScreenPreview() {
+    ClassAttendanceAppTheme {
+        DashboardScreen()
+    }
+}

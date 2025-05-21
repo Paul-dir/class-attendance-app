@@ -9,8 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -35,10 +33,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.100/attendance_api/") // Replace with your PC's IP
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
         api = ApiClient.retrofit.create(AuthApi::class.java)
 
         val emailInput = findViewById<EditText>(R.id.emailInput)
@@ -84,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
             val password = passwordInput.text.toString()
 
             if (email.isNotEmpty() && password.isNotEmpty()) {
-                val data = AuthData(email, password, "STU${(100..999).random()}") // Random student ID
+                val data = AuthData(email, password, "STU${(100..999).random()}")
                 api.signup(data).enqueue(object : Callback<Map<String, String>> {
                     override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                         if (response.isSuccessful && response.body()?.get("message") == "Sign up successful") {

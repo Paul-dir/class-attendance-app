@@ -1,22 +1,33 @@
-// MarkAttendanceActivity.kt
 package com.example.classattendanceapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.classattendanceapp.ui.theme.ClassAttendanceAppTheme
 
 class MarkAttendanceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MarkAttendanceScreen()
+            ClassAttendanceAppTheme {
+                MarkAttendanceScreen()
+            }
         }
     }
 }
 
 @Composable
 fun MarkAttendanceScreen() {
-    Text("This is the Mark Attendance Screen")
+    Text(text = "Mark Attendance Screen")
+}
+
+@Preview
+@Composable
+fun MarkAttendanceScreenPreview() {
+    ClassAttendanceAppTheme {
+        MarkAttendanceScreen()
+    }
 }

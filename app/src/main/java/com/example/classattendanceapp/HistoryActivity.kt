@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -21,12 +19,7 @@ class HistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.1.100/attendance_api/") // Replace with your PC's IP
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-         val api = ApiClient.retrofit.create(HistoryApi::class.java)
-
+        val api = ApiClient.retrofit.create(HistoryApi::class.java)
         val historyText = findViewById<TextView>(R.id.historyText)
         val studentId = intent.getStringExtra("student_id") ?: return
 
@@ -52,4 +45,3 @@ class HistoryActivity : AppCompatActivity() {
         })
     }
 }
-
